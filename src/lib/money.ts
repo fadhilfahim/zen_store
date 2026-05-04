@@ -1,8 +1,8 @@
-export function formatMoney(amount: number, currency = "INR") {
+export function formatMoney(amount: number, currency = "LKR") {
   try {
-    return new Intl.NumberFormat("en-IN", {
+    return new Intl.NumberFormat("en-LK", {
       style: "currency",
-      currency,
+      currency: "LKR",
       maximumFractionDigits: 0,
     }).format(amount);
   } catch {

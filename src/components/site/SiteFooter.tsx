@@ -6,7 +6,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-7xl space-y-8 overflow-hidden px-4 py-12 sm:px-6 lg:px-8">
         <div className="mt-8 flex justify-center space-x-6">
           <a
-            href="https://wa.me/"
+            href="https://wa.me/94772405835"
             className="text-[rgb(var(--zen-muted))] hover:text-[rgb(var(--zen-fg))]"
             target="_blank"
             rel="noreferrer"
@@ -18,7 +18,7 @@ export function SiteFooter() {
           </a>
 
           <a
-            href="#"
+            href="https://www.instagram.com/zenfi.ts?igsh=MTVpajgzYTd6dXppaQ%3D%3D&utm_source=qr"
             className="text-[rgb(var(--zen-muted))] hover:text-[rgb(var(--zen-fg))]"
           >
             <span className="sr-only">Instagram</span>
@@ -32,7 +32,7 @@ export function SiteFooter() {
           </a>
 
           <a
-            href="https://www.tiktok.com/"
+            href="https://www.tiktok.com/@zenfi.ts?_r=1&_t=ZS-964lesuiFay"
             className="text-[rgb(var(--zen-muted))] hover:text-[rgb(var(--zen-fg))]"
             target="_blank"
             rel="noreferrer"
@@ -44,7 +44,7 @@ export function SiteFooter() {
           </a>
 
           <a
-            href="mailto:hello@zen.store"
+            href="mailto:Zenclothing10@gmail.com"
             className="text-[rgb(var(--zen-muted))] hover:text-[rgb(var(--zen-fg))]"
           >
             <span className="sr-only">Email</span>
