@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Brand palette (BLACK / WHITE / GREY only) */
+  --zen-black: 0 0 0;
+  --zen-white: 255 255 255;
+  --zen-grey-1: 245 245 245;
+  --zen-grey-2: 229 229 229;
+  --zen-grey-3: 163 163 163;
+  --zen-grey-4: 82 82 82;
+
+  /* Semantic tokens (used by Tailwind theme colors) */
+  --zen-bg: var(--zen-white);
+  --zen-fg: var(--zen-black);
+  --zen-muted: var(--zen-grey-4);
+  --zen-subtle: var(--zen-grey-1);
+  --zen-border: var(--zen-grey-2);
+  --zen-card: var(--zen-white);
+  --zen-ring: var(--zen-grey-3);
+  --zen-danger: var(--zen-black);
+
+  --font-sans: ui-sans-serif;
+}
+
+/* Explicit theme overrides (manual toggle) */
+html[data-theme="light"] {
+  --zen-bg: var(--zen-white);
+  --zen-fg: var(--zen-black);
+  --zen-muted: var(--zen-grey-4);
+  --zen-subtle: var(--zen-grey-1);
+  --zen-border: var(--zen-grey-2);
+  --zen-card: var(--zen-white);
+  --zen-ring: var(--zen-grey-3);
+}
+
+html[data-theme="dark"] {
+  --zen-bg: var(--zen-black);
+  --zen-fg: var(--zen-white);
+  --zen-muted: var(--zen-grey-3);
+  --zen-subtle: var(--zen-grey-4);
+  --zen-border: var(--zen-grey-4);
+  --zen-card: var(--zen-black);
+  --zen-ring: var(--zen-grey-3);
+}
+
+/* Default to OS preference only when no manual theme is set */
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) {
+    --zen-bg: var(--zen-black);
+    --zen-fg: var(--zen-white);
+    --zen-muted: var(--zen-grey-3);
+    --zen-subtle: var(--zen-grey-4);
+    --zen-border: var(--zen-grey-4);
+    --zen-card: var(--zen-black);
+    --zen-ring: var(--zen-grey-3);
+  }
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: rgb(var(--zen-bg));
+  color: rgb(var(--zen-fg));
+  font-feature-settings: "ss01" 1, "ss02" 1, "liga" 1, "kern" 1;
+  text-rendering: geometricPrecision;
+}
+
+::selection {
+  background: rgb(var(--zen-fg) / 0.12);
+}
+
