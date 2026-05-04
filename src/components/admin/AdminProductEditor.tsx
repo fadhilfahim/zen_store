@@ -118,7 +118,10 @@ export function AdminProductEditor({
             </p>
 
             {mode === "edit" ? (
-              <form action={adminUploadProductImage} className="mt-4 grid gap-3">
+              <form action={async (formData) => {
+                await adminUploadProductImage(formData);
+                router.refresh();
+              }} className="mt-4 grid gap-3">
                 <input type="hidden" name="id" value={product.id} />
                 <input
                   className="block w-full text-sm text-muted file:mr-4 file:rounded-xl file:border file:border-border file:bg-subtle file:px-4 file:py-2 file:text-sm file:font-medium file:text-fg hover:file:border-fg/40"

@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { AdminProductEditor } from "@/components/admin/AdminProductEditor";
 import { getProduct } from "@/lib/store";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminEditProductPage({
   params,
 }: {
