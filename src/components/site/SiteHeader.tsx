@@ -126,7 +126,7 @@ export function SiteHeader() {
               </Link>
             </li>
 
-            <li>
+            {/* <li>
               <button
                 type="button"
                 aria-label="Notifications"
@@ -170,7 +170,7 @@ export function SiteHeader() {
                   />
                 </svg>
               </button>
-            </li>
+            </li> */}
 
             <li>
               <button

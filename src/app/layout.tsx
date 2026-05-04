@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     default: "ZEN — Premium Streetwear",
     template: "%s · ZEN",
   },
-  description: "Minimal, modern, premium streetwear essentials.",
+  description: "no noise.just ZEN.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
   openGraph: {
     title: "ZEN — Premium Streetwear",
