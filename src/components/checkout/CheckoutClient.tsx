@@ -38,8 +38,16 @@ export function CheckoutClient() {
 
     successHandledRef.current = true;
     clearRef.current();
-    const orderId = state.orderId;
-    routerRef.current.push(`/checkout/success?orderId=${encodeURIComponent(orderId)}`);
+
+    try {
+      window.sessionStorage.setItem("zen-last-order", JSON.stringify(state.order));
+    } catch {
+      // ignore session storage failures
+    }
+
+    routerRef.current.push(
+      `/checkout/success?orderId=${encodeURIComponent(state.order.id)}`,
+    );
   }, [state]);
 
   if (lines.length === 0) {

@@ -3,6 +3,7 @@ import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import fs from "fs";
 import path from "path";
 
+import { buildWhatsAppMessage, getWhatsAppLink } from "@/lib/whatsapp";
 import type { Order } from "@/lib/domain";
 
 /* ---------------- SMTP CHECK ---------------- */
@@ -64,52 +65,6 @@ async function sendEmail({
 }
 
 /* ---------------- WHATSAPP (CLICK TO CHAT) ---------------- */
-
-export function buildWhatsAppMessage(order: Order) {
-  const itemLines = order.items
-    .map((item) => {
-      const total = item.price * item.quantity;
-      const metadata = [item.color, item.size].filter(Boolean).join(" • ");
-      return `- ${item.name}${metadata ? ` (${metadata})` : ""} x${item.quantity} = LKR ${total}`;
-    })
-    .join("\n");
-
-  return `🧾 ZEN ORDER CONFIRMED
-
-Order ID: ${order.id}
-Date: ${new Date(order.createdAt).toLocaleDateString()}
-
-Customer: ${order.customer.fullName}
-Phone: ${order.customer.phone}
-Email: ${order.customer.email}
-Address: ${order.customer.address}
-
-Payment: ${order.paymentMethod}
-
-Items:
-${itemLines}
-
-Total: LKR ${order.total}
-
-Thank you for shopping with ZEN`;
-}
-
-export function getWhatsAppLink(phone: string, message: string) {
-  // Step 1: normalize
-  let clean = phone.replace(/\D/g, "");
-
-  // Step 2: fix Sri Lanka format edge cases
-  if (clean.startsWith("0")) {
-    clean = "94" + clean.slice(1);
-  }
-
-  if (!clean.startsWith("94")) {
-    // fallback safety
-    clean = "94" + clean;
-  }
-
-  return `https://wa.me/${clean}?text=${encodeURIComponent(message)}`;
-}
 
 /* ---------------- PDF GENERATOR (SAFE + PREMIUM) ---------------- */
 

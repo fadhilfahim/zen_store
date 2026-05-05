@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 
-import { PaymentMethodEnum } from "@/lib/domain";
+import { type Order, PaymentMethodEnum } from "@/lib/domain";
 import { createOrder } from "@/lib/store";
 import { notifyOrderPlaced } from "@/lib/notifications";
 
@@ -26,7 +26,7 @@ const ItemSchema = z.object({
 });
 
 export type PlaceOrderState =
-  | { ok: true; orderId: string }
+  | { ok: true; order: Order }
   | { ok: false; message: string };
 
 export async function placeOrder(
@@ -60,7 +60,7 @@ export async function placeOrder(
     });
 
     await notifyOrderPlaced(order);
-    return { ok: true, orderId: order.id };
+    return { ok: true, order };
   } catch (e) {
     const message = e instanceof Error ? e.message : "Failed to place order.";
     return { ok: false, message };

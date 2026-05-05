@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/Button";
-import { buildWhatsAppMessage, getWhatsAppLink } from "@/lib/notifications";
+import { SuccessWhatsAppSection } from "@/app/checkout/SuccessWhatsAppSection";
 import { getOrder } from "@/lib/store";
 
 export const metadata: Metadata = {
@@ -19,13 +19,7 @@ export default async function CheckoutSuccessPage({
 
   const order = orderId ? await getOrder(orderId) : null;
 
-  const targetPhone =
-    process.env.ADMIN_WHATSAPP_PHONE || "94772405835";
-
-  const whatsappLink =
-    order
-      ? getWhatsAppLink(targetPhone, buildWhatsAppMessage(order))
-      : null;
+  const targetPhone = process.env.ADMIN_WHATSAPP_PHONE || "94772405835";
 
   return (
     <Container className="py-24">
@@ -63,54 +57,7 @@ export default async function CheckoutSuccessPage({
           confirmation shortly. Payment will be handled offline based on your selected method.
         </p>
 
-        {/* WHATSAPP CTA CARD */}
-        {whatsappLink && (
-          <div className="mt-10 flex justify-center">
-
-            <div className="relative h-[10em] w-[20em] bg-white rounded-2xl overflow-hidden group shadow-lg border border-gray-100">
-
-              {/* EXPANDING CIRCLE */}
-              <div className="absolute h-[6em] w-[6em] -top-[3em] -right-[3em] rounded-full bg-green-500 group-hover:scale-[800%] duration-500 z-0"></div>
-
-              {/* CONTENT */}
-              <a
-                href={whatsappLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="absolute inset-0 z-10 p-5 flex flex-col justify-between"
-              >
-
-                {/* TITLE */}
-                <h1 className="font-semibold text-[1.35em] text-black group-hover:text-white duration-500">
-                  WhatsApp us your Order
-                </h1>
-
-                {/* SUB TEXT */}
-                <p className="text-[0.9em] text-gray-500 group-hover:text-white/90 duration-500 leading-snug">
-                  Send your order details instantly to confirm your purchase with ZEN.
-                </p>
-
-                {/* CTA */}
-                <div className="text-[0.95em] text-green-600 group-hover:text-white duration-500 flex items-center gap-2 font-medium">
-                  <span className="relative before:h-[2px] before:absolute before:w-full before:bg-green-600 group-hover:before:bg-white before:bottom-0 before:left-0">
-                    Send on WhatsApp
-                  </span>
-
-                  {/* ARROW */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z" />
-                  </svg>
-                </div>
-
-              </a>
-            </div>
-          </div>
-        )}
+        <SuccessWhatsAppSection order={order} targetPhone={targetPhone} />
 
         {/* ACTIONS */}
         <div className="mt-10 flex flex-col md:flex-row justify-center gap-3">
