@@ -5,7 +5,7 @@ import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/Button";
 import { buildWhatsAppMessage, getWhatsAppLink } from "@/lib/notifications";
 import { getOrder } from "@/lib/store";
-import { WhatsAppModal } from "../WhatsAppModal";
+import { WhatsAppModal } from "@/app/checkout/WhatsAppModal";
 
 export const metadata: Metadata = {
   title: "Order Confirmed",
@@ -16,22 +16,28 @@ export default async function CheckoutSuccessPage({
 }: {
   searchParams: Promise<{ orderId?: string }>;
 }) {
+  // ✅ FIX: must await searchParams
   const { orderId } = await searchParams;
+
   const order = orderId ? await getOrder(orderId) : null;
-  const targetPhone = order
-    ? process.env.ADMIN_WHATSAPP_PHONE ?? order.customer.phone
-    : null;
-  const whatsappLink = order && targetPhone
-    ? getWhatsAppLink(targetPhone, buildWhatsAppMessage(order))
-    : null;
+
+  const targetPhone =
+    process.env.ADMIN_WHATSAPP_PHONE || "94772405835";
+
+  const whatsappLink =
+    order
+      ? getWhatsAppLink(targetPhone, buildWhatsAppMessage(order))
+      : null;
 
   return (
     <Container className="py-20">
       <div className="mx-auto max-w-xl text-center">
         <p className="text-xs tracking-[0.28em] text-muted">ORDER PLACED</p>
+
         <h1 className="mt-4 text-3xl font-semibold tracking-tight">
           Thanks — we’ve recorded your order.
         </h1>
+
         <p className="mt-3 text-sm text-muted">
           {orderId ? (
             <>
@@ -42,15 +48,18 @@ export default async function CheckoutSuccessPage({
             "Your confirmation has been captured."
           )}
         </p>
+
         <p className="mt-3 text-sm text-muted">
-          You’ll receive an email summary. Payment is handled offline based on the
-          method you selected.
+          You’ll receive an email summary. Payment is handled offline.
         </p>
+
         {whatsappLink && <WhatsAppModal link={whatsappLink} />}
+
         <div className="mt-8 flex justify-center gap-3">
           <Button asChild>
             <Link href="/shop">Continue shopping</Link>
           </Button>
+
           <Button asChild variant="outline">
             <Link href="/">Home</Link>
           </Button>
@@ -58,6 +67,4 @@ export default async function CheckoutSuccessPage({
       </div>
     </Container>
   );
-  
 }
-
