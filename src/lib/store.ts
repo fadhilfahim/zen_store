@@ -60,6 +60,11 @@ export async function getOrders(): Promise<Order[]> {
   return (doc.orders ?? []).map((o) => OrderSchema.parse(o));
 }
 
+export async function getOrder(id: string): Promise<Order | null> {
+  const orders = await getOrders();
+  return orders.find((order) => order.id === id) ?? null;
+}
+
 export async function createOrder(input: Omit<Order, "id" | "createdAt" | "status">) {
   const orders = await getOrders();
   const order: Order = OrderSchema.parse({

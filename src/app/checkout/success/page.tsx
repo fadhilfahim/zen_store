@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/Button";
+import { buildWhatsAppMessage, getWhatsAppLink } from "@/lib/notifications";
+import { getOrder } from "@/lib/store";
 
 export const metadata: Metadata = {
   title: "Order Confirmed",
@@ -14,6 +16,13 @@ export default async function CheckoutSuccessPage({
   searchParams: Promise<{ orderId?: string }>;
 }) {
   const { orderId } = await searchParams;
+  const order = orderId ? await getOrder(orderId) : null;
+  const targetPhone = order
+    ? process.env.ADMIN_WHATSAPP_PHONE ?? order.customer.phone
+    : null;
+  const whatsappLink = order && targetPhone
+    ? getWhatsAppLink(targetPhone, buildWhatsAppMessage(order))
+    : null;
 
   return (
     <Container className="py-20">
@@ -36,6 +45,27 @@ export default async function CheckoutSuccessPage({
           You’ll receive an email summary. Payment is handled offline based on the
           method you selected.
         </p>
+        {whatsappLink ? (
+          <div className="mt-8 rounded-3xl border border-muted/30 bg-muted/5 p-6 text-left">
+            <p className="text-sm font-medium text-fg">
+              Send the full order details via WhatsApp.
+            </p>
+            <p className="mt-2 text-sm text-muted">
+              Tap the button below to open WhatsApp with your full order summary.
+            </p>
+            <div className="mt-4">
+              <Button asChild>
+                <a
+                  href={whatsappLink}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Send order details to WhatsApp
+                </a>
+              </Button>
+            </div>
+          </div>
+        ) : null}
         <div className="mt-8 flex justify-center gap-3">
           <Button asChild>
             <Link href="/shop">Continue shopping</Link>
