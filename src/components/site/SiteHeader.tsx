@@ -15,7 +15,7 @@ export function SiteHeader() {
       <nav className="flex flex-wrap items-center justify-between px-10 py-2 bg-[rgb(var(--zen-bg))] shadow-sm">
         <Link href="/" aria-label="ZEN Home">
           <Image
-            src="/image.jpg"
+            src="/image.png"
             alt="ZEN Logo"
             width={140}
             height={40}
