@@ -12,10 +12,25 @@ function nowIso() {
   return new Date().toISOString();
 }
 
-function newId(prefix: string) {
-  return typeof crypto !== "undefined" && "randomUUID" in crypto
-    ? `${prefix}_${crypto.randomUUID()}`
-    : `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+function formatOrderDate() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}${month}${day}`;
+}
+
+function nextOrderId(orders: Order[]) {
+  const date = formatOrderDate();
+  const existingOrderNumbers = orders
+    .map((order) => {
+      const match = order.id.match(/^order_\d{8}(\d{6})$/);
+      return match ? Number(match[1]) : null;
+    })
+    .filter((value): value is number => value !== null);
+
+  const next = existingOrderNumbers.length ? Math.max(...existingOrderNumbers) + 1 : 1;
+  return `order_${date}${String(next).padStart(6, "0")}`;
 }
 
 export async function getProducts(): Promise<Product[]> {
@@ -69,7 +84,7 @@ export async function createOrder(input: Omit<Order, "id" | "createdAt" | "statu
   const orders = await getOrders();
   const order: Order = OrderSchema.parse({
     ...input,
-    id: newId("order"),
+    id: nextOrderId(orders),
     createdAt: nowIso(),
     status: "PLACED",
   });
