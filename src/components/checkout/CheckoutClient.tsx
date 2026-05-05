@@ -16,6 +16,17 @@ import { placeOrder, type PlaceOrderState } from "@/app/checkout/actions";
 export function CheckoutClient() {
   const router = useRouter();
   const { lines, subtotal, clear } = useCart();
+  const successHandledRef = React.useRef(false);
+  const routerRef = React.useRef(router);
+  const clearRef = React.useRef(clear);
+
+  React.useEffect(() => {
+    routerRef.current = router;
+  }, [router]);
+
+  React.useEffect(() => {
+    clearRef.current = clear;
+  }, [clear]);
 
   const [state, action, pending] = React.useActionState<
     PlaceOrderState | null,
@@ -23,12 +34,13 @@ export function CheckoutClient() {
   >(placeOrder, null);
 
   React.useEffect(() => {
-    if (state?.ok) {
-      clear();
-      router.push(`/checkout/success?orderId=${encodeURIComponent(state.orderId)}`);
-      router.refresh();
-    }
-  }, [state, clear, router]);
+    if (!state?.ok || successHandledRef.current) return;
+
+    successHandledRef.current = true;
+    clearRef.current();
+    const orderId = state.orderId;
+    routerRef.current.push(`/checkout/success?orderId=${encodeURIComponent(orderId)}`);
+  }, [state]);
 
   if (lines.length === 0) {
     return (

@@ -12,14 +12,14 @@
   --zen-grey-4: 82 82 82;
 
   /* Semantic tokens (used by Tailwind theme colors) */
-  --zen-bg: var(--zen-white);
-  --zen-fg: var(--zen-black);
-  --zen-muted: var(--zen-grey-4);
-  --zen-subtle: var(--zen-grey-1);
-  --zen-border: var(--zen-grey-2);
-  --zen-card: var(--zen-white);
+  --zen-bg: var(--zen-black);
+  --zen-fg: var(--zen-white);
+  --zen-muted: var(--zen-grey-3);
+  --zen-subtle: var(--zen-grey-4);
+  --zen-border: var(--zen-grey-4);
+  --zen-card: var(--zen-black);
   --zen-ring: var(--zen-grey-3);
-  --zen-danger: var(--zen-black);
+  --zen-danger: var(--zen-white);
 
   --font-sans: ui-sans-serif;
 }

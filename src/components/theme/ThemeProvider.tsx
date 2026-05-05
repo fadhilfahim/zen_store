@@ -12,22 +12,16 @@ type ThemeContextValue = {
 
 const ThemeContext = React.createContext<ThemeContextValue | null>(null);
 
-function getPreferredTheme(): Theme {
-  if (typeof window === "undefined") return "light";
-  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-}
-
 function applyThemeToDom(theme: Theme) {
   document.documentElement.setAttribute("data-theme", theme);
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = React.useState<Theme>("light");
+  const [theme, setThemeState] = React.useState<Theme>("dark");
 
   React.useEffect(() => {
-    const stored = window.localStorage.getItem("zen.theme") as Theme | null;
-    const initial = stored === "light" || stored === "dark" ? stored : getPreferredTheme();
-    setThemeState(initial);
+    const initial: Theme = "dark";
+    window.localStorage.setItem("zen.theme", initial);
     applyThemeToDom(initial);
   }, []);
 

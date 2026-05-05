@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import type { Product } from "@/lib/domain";
 import { Container } from "@/components/layout/Container";
@@ -19,7 +20,12 @@ export function AdminProductEditor({
   mode: "new" | "edit";
 }) {
   const router = useRouter();
-  const imagesJson = JSON.stringify(product.images ?? []);
+  const [images, setImages] = useState<string[]>(product.images ?? []);
+  const imagesJson = JSON.stringify(images);
+
+  useEffect(() => {
+    setImages(product.images ?? []);
+  }, [product.images]);
 
   return (
     <Container className="py-10">
@@ -118,10 +124,13 @@ export function AdminProductEditor({
             </p>
 
             {mode === "edit" ? (
-              <form action={async (formData) => {
-                await adminUploadProductImage(formData);
-                router.refresh();
-              }} className="mt-4 grid gap-3">
+              <form
+                action={async (formData) => {
+                  const updated = await adminUploadProductImage(formData);
+                  setImages(updated.images);
+                }}
+                className="mt-4 grid gap-3"
+              >
                 <input type="hidden" name="id" value={product.id} />
                 <input
                   className="block w-full text-sm text-muted file:mr-4 file:rounded-xl file:border file:border-border file:bg-subtle file:px-4 file:py-2 file:text-sm file:font-medium file:text-fg hover:file:border-fg/40"
@@ -141,7 +150,7 @@ export function AdminProductEditor({
             )}
 
             <div className="mt-5 grid grid-cols-2 gap-3">
-              {(product.images ?? []).map((url) => {
+              {images.map((url) => {
                 const isRemote = url.startsWith("http");
                 return (
                   <div key={url} className="rounded-xl border border-border bg-subtle p-2">
@@ -157,8 +166,8 @@ export function AdminProductEditor({
                   {mode === "edit" ? (
                     <form
                       action={async (formData) => {
-                        await adminRemoveProductImage(formData);
-                        router.refresh();
+                        const updated = await adminRemoveProductImage(formData);
+                        setImages(updated.images);
                       }}
                       className="mt-2"
                     >
@@ -174,7 +183,7 @@ export function AdminProductEditor({
             })}
             </div>
 
-            {(product.images ?? []).length === 0 ? (
+            {images.length === 0 ? (
               <div className="mt-4 rounded-xl border border-border bg-subtle p-4 text-sm text-muted">
                 No images yet.
               </div>

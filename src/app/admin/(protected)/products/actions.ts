@@ -5,7 +5,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { ProductSchema } from "@/lib/domain";
+import { ProductSchema, type Product } from "@/lib/domain";
 import { getProduct, upsertProduct } from "@/lib/store";
 import { deleteBlobByUrl } from "@/lib/blob-json";
 
@@ -51,7 +51,7 @@ export async function adminSaveProduct(formData: FormData) {
   redirect(`/admin/products/${parsed.id}/edit`);
 }
 
-export async function adminUploadProductImage(formData: FormData) {
+export async function adminUploadProductImage(formData: FormData): Promise<Product> {
   const id = z.string().min(1).parse(String(formData.get("id") || ""));
   const file = formData.get("image") as File | null;
   if (!file) throw new Error("Missing image file.");
@@ -74,25 +74,30 @@ export async function adminUploadProductImage(formData: FormData) {
 
   const existing = await getProduct(id);
   if (!existing) throw new Error("Product not found.");
-  await upsertProduct({ ...existing, images: [blob.url, ...existing.images] });
+
+  const updated = { ...existing, images: [blob.url, ...existing.images] };
+  await upsertProduct(updated);
 
   revalidatePath(`/admin/products/${id}/edit`);
   revalidatePath(`/product/${id}`);
   revalidatePath("/shop");
+  return updated;
 }
 
-export async function adminRemoveProductImage(formData: FormData) {
+export async function adminRemoveProductImage(formData: FormData): Promise<Product> {
   const id = z.string().min(1).parse(String(formData.get("id") || ""));
   const url = z.string().min(1).parse(String(formData.get("url") || ""));
 
   const existing = await getProduct(id);
   if (!existing) throw new Error("Product not found.");
 
-  await upsertProduct({ ...existing, images: existing.images.filter((u) => u !== url) });
+  const updated = { ...existing, images: existing.images.filter((u) => u !== url) };
+  await upsertProduct(updated);
   await deleteBlobByUrl(url);
 
   revalidatePath(`/admin/products/${id}/edit`);
   revalidatePath(`/product/${id}`);
   revalidatePath("/shop");
+  return updated;
 }
 

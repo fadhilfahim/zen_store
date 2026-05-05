@@ -5,12 +5,10 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { useCart } from "@/components/cart/CartProvider";
-import { useTheme } from "@/components/theme/ThemeProvider";
 
 export function SiteHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { itemCount, hydrated } = useCart();
-  const { theme, toggleTheme } = useTheme();
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-bg/75 backdrop-blur">
@@ -172,46 +170,6 @@ export function SiteHeader() {
               </button>
             </li> */}
 
-            <li>
-              <button
-                type="button"
-                onClick={toggleTheme}
-                aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-                className="text-[rgb(var(--zen-muted))] transition hover:text-[rgb(var(--zen-fg))]"
-              >
-                {theme === "dark" ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364-6.364-1.414 1.414M7.05 16.95l-1.414 1.414m0-11.314L7.05 7.05m10.9 10.9 1.414 1.414M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z"
-                    />
-                  </svg>
-                )}
-              </button>
-            </li>
           </ul>
         </div>
       </nav>
