@@ -64,53 +64,53 @@ export default async function CheckoutSuccessPage({
         </p>
 
         {/* WHATSAPP CTA CARD */}
-      {whatsappLink && (
-  <div className="mt-10 flex justify-center">
-    
-    <div className="relative h-[10em] w-[20em] bg-white rounded-2xl overflow-hidden group shadow-lg border border-gray-100">
+        {whatsappLink && (
+          <div className="mt-10 flex justify-center">
 
-      {/* EXPANDING CIRCLE */}
-      <div className="absolute h-[6em] w-[6em] -top-[3em] -right-[3em] rounded-full bg-green-500 group-hover:scale-[800%] duration-500 z-0"></div>
+            <div className="relative h-[10em] w-[20em] bg-white rounded-2xl overflow-hidden group shadow-lg border border-gray-100">
 
-      {/* CONTENT */}
-      <a
-        href={whatsappLink}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="absolute inset-0 z-10 p-5 flex flex-col justify-between"
-      >
+              {/* EXPANDING CIRCLE */}
+              <div className="absolute h-[6em] w-[6em] -top-[3em] -right-[3em] rounded-full bg-green-500 group-hover:scale-[800%] duration-500 z-0"></div>
 
-        {/* TITLE */}
-        <h1 className="font-semibold text-[1.35em] text-black group-hover:text-white duration-500">
-          WhatsApp us your Order
-        </h1>
+              {/* CONTENT */}
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="absolute inset-0 z-10 p-5 flex flex-col justify-between"
+              >
 
-        {/* SUB TEXT */}
-        <p className="text-[0.9em] text-gray-500 group-hover:text-white/90 duration-500 leading-snug">
-          Send your order details instantly to confirm your purchase with ZEN.
-        </p>
+                {/* TITLE */}
+                <h1 className="font-semibold text-[1.35em] text-black group-hover:text-white duration-500">
+                  WhatsApp us your Order
+                </h1>
 
-        {/* CTA */}
-        <div className="text-[0.95em] text-green-600 group-hover:text-white duration-500 flex items-center gap-2 font-medium">
-          <span className="relative before:h-[2px] before:absolute before:w-full before:bg-green-600 group-hover:before:bg-white before:bottom-0 before:left-0">
-            Send on WhatsApp
-          </span>
+                {/* SUB TEXT */}
+                <p className="text-[0.9em] text-gray-500 group-hover:text-white/90 duration-500 leading-snug">
+                  Send your order details instantly to confirm your purchase with ZEN.
+                </p>
 
-          {/* ARROW */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z" />
-          </svg>
-        </div>
+                {/* CTA */}
+                <div className="text-[0.95em] text-green-600 group-hover:text-white duration-500 flex items-center gap-2 font-medium">
+                  <span className="relative before:h-[2px] before:absolute before:w-full before:bg-green-600 group-hover:before:bg-white before:bottom-0 before:left-0">
+                    Send on WhatsApp
+                  </span>
 
-      </a>
-    </div>
-  </div>
-)}
+                  {/* ARROW */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z" />
+                  </svg>
+                </div>
+
+              </a>
+            </div>
+          </div>
+        )}
 
         {/* ACTIONS */}
         <div className="mt-10 flex flex-col md:flex-row justify-center gap-3">
