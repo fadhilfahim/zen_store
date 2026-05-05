@@ -31,15 +31,15 @@ export default function Hero() {
           </span>
         </Link>
       </div>
-
-      <div className="absolute bottom-6 right-6 z-10 flex gap-2">
+      {/*********** DIV for Small two overlay images **********/}
+      {/* <div className="absolute bottom-6 right-6 z-10 flex gap-2">
         <div className="relative h-20 w-20 overflow-hidden rounded sm:h-24 sm:w-24">
           <Image src="/herobg.jpg" alt="" fill className="object-cover" />
         </div>
         <div className="relative h-20 w-20 overflow-hidden rounded sm:h-24 sm:w-24">
           <Image src="/herobg.jpg" alt="" fill className="object-cover" />
         </div>
-      </div>
+      </div> */}
     </section>
   );
 }
