@@ -95,7 +95,19 @@ Thank you for shopping with ZEN`;
 }
 
 export function getWhatsAppLink(phone: string, message: string) {
-  const clean = phone.replace(/\D/g, "");
+  // Step 1: normalize
+  let clean = phone.replace(/\D/g, "");
+
+  // Step 2: fix Sri Lanka format edge cases
+  if (clean.startsWith("0")) {
+    clean = "94" + clean.slice(1);
+  }
+
+  if (!clean.startsWith("94")) {
+    // fallback safety
+    clean = "94" + clean;
+  }
+
   return `https://wa.me/${clean}?text=${encodeURIComponent(message)}`;
 }
 
