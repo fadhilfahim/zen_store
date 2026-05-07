@@ -408,6 +408,8 @@ Order ID: ${order.id}
 
 Customer: ${order.customer.fullName}
 
+Payment: ${order.paymentMethod}
+
 Total: LKR ${order.total}
 
 Thank you for shopping with ZEN.

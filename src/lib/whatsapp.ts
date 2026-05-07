@@ -27,7 +27,7 @@ Email: ${order.email}
 Items:
 ${itemLines}
 
-Payment: CASH ON DELIVERY
+Payment: ${order.payment_method}
 
 Total: LKR ${order.total_amount}
 

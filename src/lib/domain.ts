@@ -39,6 +39,7 @@ export const OrderSchema = z.object({
   phone: z.string().optional(),
   total_amount: z.number(),
   status: z.enum(["PLACED", "SHIPPED", "DELIVERED", "CANCELLED"]),
+  payment_method: z.string().optional(),
   created_at: z.string().optional(),
   items: z.array(OrderItemSchema).optional(),
 });

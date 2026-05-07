@@ -74,6 +74,7 @@ export default async function AdminDashboardPage() {
                 <p className="mt-1 text-xs text-muted">
                   {o.created_at ? new Date(o.created_at).toLocaleString() : "—"} · {o.email} · {o.phone}
                 </p>
+                <p className="mt-1 text-xs text-muted">Payment method : {o.payment_method}</p>
               </div>
 
               {/* ITEMS */}
