@@ -206,6 +206,18 @@ async function generateReceiptPDF(
     },
   );
 
+  y -= 16;
+
+  page.drawText(
+    `Payment Method: ${order.paymentMethod}`,
+    {
+      x: 40,
+      y,
+      size: 10,
+      font,
+    },
+  );
+
   y -= 40;
 
   /* ---------------- TABLE ---------------- */

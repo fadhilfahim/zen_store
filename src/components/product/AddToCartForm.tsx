@@ -70,17 +70,32 @@ export function AddToCartForm({ product }: { product: Product }) {
         </div>
       </div>
 
-      <div className="max-w-[220px]">
+      <div>
         <label className="mb-2 block text-xs text-muted">Quantity</label>
-        <Input
-          type="number"
-          inputMode="numeric"
-          min={1}
-          max={99}
-          value={quantity}
-          onChange={(e) => setQuantity(Math.max(1, Number(e.target.value || 1)))}
-          disabled={!inStock}
-        />
+
+        <div className="flex items-center overflow-hidden rounded-xl border border-border bg-card w-fit">
+          <button
+            type="button"
+            disabled={!inStock}
+            className="flex h-11 w-11 items-center justify-center text-xl font-semibold transition hover:bg-subtle disabled:cursor-not-allowed disabled:opacity-40"
+            onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+          >
+            −
+          </button>
+
+          <div className="flex h-11 min-w-[56px] items-center justify-center border-x border-border px-4 text-sm font-medium">
+            {quantity}
+          </div>
+
+          <button
+            type="button"
+            disabled={!inStock}
+            className="flex h-11 w-11 items-center justify-center text-xl font-semibold transition hover:bg-subtle disabled:cursor-not-allowed disabled:opacity-40"
+            onClick={() => setQuantity((prev) => Math.min(99, prev + 1))}
+          >
+            +
+          </button>
+        </div>
       </div>
 
       <div className="mt-2 grid gap-3 sm:grid-cols-2">

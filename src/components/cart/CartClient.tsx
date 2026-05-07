@@ -75,20 +75,40 @@ export function CartClient() {
               </div>
             </div>
 
-            <div className="flex flex-1 items-center justify-between gap-4 sm:justify-end">
-              <div className="w-[120px]">
-                <Input
-                  type="number"
-                  min={1}
-                  max={99}
-                  value={l.quantity}
-                  onChange={(e) => updateQuantity(l.id, Number(e.target.value || 1))}
-                />
+            <div className="flex flex-1 items-center gap-6 sm:justify-end">
+              {/* Quantity */}
+              <div className="flex items-center overflow-hidden rounded-xl border border-border bg-card w-fit">
+                
+                <button
+                  type="button"
+                  className="flex h-10 w-10 items-center justify-center text-lg font-semibold transition hover:bg-subtle"
+                  onClick={() => updateQuantity(l.id, Math.max(1, l.quantity - 1))}
+                >
+                  -
+                </button>
+
+                <div className="flex h-10 min-w-[48px] items-center justify-center border-x border-border px-3 text-sm font-medium">
+                  {l.quantity}
+                </div>
+
+                <button
+                  type="button"
+                  className="flex h-10 w-10 items-center justify-center text-lg font-semibold transition hover:bg-subtle"
+                  onClick={() => updateQuantity(l.id, Math.min(99, l.quantity + 1))}
+                >
+                  +
+                </button>
               </div>
+
+              {/* Total */}
               <div className="text-right">
                 <p className="text-xs text-muted">Line total</p>
-                <p className="text-sm font-semibold">{formatMoney(l.price * l.quantity)}</p>
+                <p className="text-sm font-semibold">
+                  {formatMoney(l.price * l.quantity)}
+                </p>
               </div>
+
+              {/* Remove */}
               <Button variant="ghost" onClick={() => removeLine(l.id)}>
                 Remove
               </Button>
