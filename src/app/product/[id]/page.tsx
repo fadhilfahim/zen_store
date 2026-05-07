@@ -5,7 +5,8 @@ import type { Metadata } from "next";
 import { Container } from "@/components/layout/Container";
 import { AddToCartForm } from "@/components/product/AddToCartForm";
 import { formatMoney } from "@/lib/money";
-import { getProduct } from "@/lib/store";
+import { getProduct } from "@/server/products";
+import { resolveProductImageUrl } from "@/lib/productsImages";
 
 export async function generateMetadata({
   params,
@@ -28,28 +29,38 @@ export default async function ProductPage({
   if (!product) notFound();
 
   const images = product.images.length ? product.images : ["/zen-placeholder.svg"];
+  const resolvedImages = await Promise.all(
+    images.map((src) => resolveProductImageUrl(src)),
+  );
 
   return (
     <Container className="py-10">
       <div className="grid gap-10 lg:grid-cols-12">
         <div className="lg:col-span-7">
           <div className="grid gap-3 sm:grid-cols-2">
-            {images.map((src, idx) => {
+            {resolvedImages.map((src, idx) => {
               const isRemote = src.startsWith("http");
               return (
                 <div
                   key={`${src}_${idx}`}
                   className="relative aspect-[4/5] overflow-hidden rounded-xl border border-border bg-subtle"
                 >
-                  <Image
-                    src={src}
-                    alt={`${product.name} image ${idx + 1}`}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-cover"
-                    priority={idx === 0}
-                    unoptimized={isRemote}
-                  />
+                  {isRemote ? (
+                    <img
+                      src={src}
+                      alt={`${product.name} image ${idx + 1}`}
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  ) : (
+                    <Image
+                      src={src}
+                      alt={`${product.name} image ${idx + 1}`}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      className="object-cover"
+                      priority={idx === 0}
+                    />
+                  )}
                 </div>
               );
             })}

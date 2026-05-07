@@ -2,7 +2,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { ProductCard } from "@/components/product/ProductCard";
 import Hero from "@/components/site/Hero";
 import { Container } from "@/components/layout/Container";
-import { getProducts } from "@/lib/store";
+import { getProducts } from "@/server/products";
 
 export default async function HomePage() {
   const products = await getProducts();

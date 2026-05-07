@@ -1,12 +1,16 @@
+"use server";
+
 import nodemailer from "nodemailer";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
-import fs from "fs";
-import path from "path";
 
-import { buildWhatsAppMessage, getWhatsAppLink } from "@/lib/whatsapp";
+import {
+  buildWhatsAppMessage,
+  getWhatsAppLink,
+} from "@/lib/whatsapp";
+
 import type { Order } from "@/lib/domain";
 
-/* ---------------- SMTP CHECK ---------------- */
+/* ---------------- SMTP ---------------- */
 
 function hasSmtp() {
   return Boolean(
@@ -35,11 +39,7 @@ async function sendEmail({
   }>;
 }) {
   if (!hasSmtp()) {
-    console.log("[email:mock]", {
-      to,
-      subject,
-      attachmentCount: attachments?.length ?? 0,
-    });
+    console.log("[email:mock]", { to, subject });
     return;
   }
 
@@ -47,13 +47,15 @@ async function sendEmail({
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT),
     secure: Number(process.env.SMTP_PORT) === 465,
+
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
     },
   });
 
-  const from = process.env.MAIL_FROM || process.env.SMTP_USER!;
+  const from =
+    process.env.MAIL_FROM || process.env.SMTP_USER!;
 
   await transporter.sendMail({
     from,
@@ -62,134 +64,248 @@ async function sendEmail({
     text,
     attachments,
   });
+
+  console.log("[email:sent]", to);
 }
 
-/* ---------------- WHATSAPP (CLICK TO CHAT) ---------------- */
+/* ---------------- PDF ---------------- */
 
-/* ---------------- PDF GENERATOR (SAFE + PREMIUM) ---------------- */
-
-async function generateReceiptPDF(order: Order): Promise<Buffer> {
-  console.log("[pdf] starting generation...");
-
+async function generateReceiptPDF(
+  order: any,
+): Promise<Buffer> {
   const pdfDoc = await PDFDocument.create();
+
   const page = pdfDoc.addPage([600, 850]);
 
-  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+  const font = await pdfDoc.embedFont(
+    StandardFonts.Helvetica,
+  );
+
+  const bold = await pdfDoc.embedFont(
+    StandardFonts.HelveticaBold,
+  );
 
   let y = 780;
 
-  /* ---------------- LOGO (SAFE) ---------------- */
-  try {
-    const logoPath = path.join(process.cwd(), "public/image.png");
-
-    if (fs.existsSync(logoPath)) {
-      const logoBytes = fs.readFileSync(logoPath);
-      const logo = await pdfDoc.embedPng(logoBytes);
-
-      page.drawImage(logo, {
-        x: 40,
-        y: y - 20,
-        width: 55,
-        height: 55,
-      });
-    } else {
-      console.log("[pdf] logo not found");
-    }
-  } catch (err) {
-    console.log("[pdf] logo skipped safely");
-  }
-
   /* ---------------- HEADER ---------------- */
-  page.drawText("ZEN", {
-    x: 110,
-    y,
-    size: 28,
-    font: bold,
+
+  page.drawRectangle({
+    x: 0,
+    y: 760,
+    width: 600,
+    height: 90,
     color: rgb(0, 0, 0),
   });
 
-  page.drawText("INVOICE", {
-    x: 110,
-    y: y - 20,
-    size: 12,
-    font,
-    color: rgb(0.4, 0.4, 0.4),
+  page.drawText("ZEN", {
+    x: 40,
+    y: 800,
+    size: 28,
+    font: bold,
+    color: rgb(1, 1, 1),
   });
 
-  y -= 80;
+  page.drawText("PREMIUM STREETWEAR", {
+    x: 40,
+    y: 780,
+    size: 10,
+    font,
+    color: rgb(0.8, 0.8, 0.8),
+  });
 
-  /* ---------------- ORDER INFO ---------------- */
-  page.drawText(`Order ID: ${order.id}`, { x: 40, y, size: 11, font: bold });
+  y = 720;
+
+  /* ---------------- INVOICE TITLE ---------------- */
+
+  page.drawText("ORDER INVOICE", {
+    x: 40,
+    y,
+    size: 20,
+    font: bold,
+  });
+
+  y -= 40;
+
+  /* ---------------- CUSTOMER INFO ---------------- */
+
+  page.drawText(`Order ID: ${order.id}`, {
+    x: 40,
+    y,
+    size: 11,
+    font: bold,
+  });
+
+  y -= 18;
+
   page.drawText(
-    `Date: ${new Date(order.createdAt).toLocaleDateString()}`,
-    { x: 350, y, size: 11, font }
+    `Date: ${new Date(
+      order.createdAt || Date.now(),
+    ).toLocaleString()}`,
+    {
+      x: 40,
+      y,
+      size: 10,
+      font,
+    },
   );
-
-  y -= 25;
-
-  page.drawText(`Customer: ${order.customer.fullName}`, {
-    x: 40,
-    y,
-    size: 11,
-    font,
-  });
-
-  y -= 15;
-
-  page.drawText(`Phone: ${order.customer.phone}`, {
-    x: 40,
-    y,
-    size: 11,
-    font,
-  });
-
-  y -= 15;
-
-  page.drawText(`Email: ${order.customer.email}`, {
-    x: 40,
-    y,
-    size: 11,
-    font,
-  });
 
   y -= 30;
 
-  /* ---------------- TABLE HEADER ---------------- */
-  page.drawText("Item", { x: 40, y, size: 11, font: bold });
-  page.drawText("Qty", { x: 260, y, size: 11, font: bold });
-  page.drawText("Price", { x: 320, y, size: 11, font: bold });
-  page.drawText("Total", { x: 420, y, size: 11, font: bold });
-
-  y -= 10;
-
-  page.drawLine({
-    start: { x: 40, y },
-    end: { x: 550, y },
-    thickness: 1,
-    color: rgb(0.8, 0.8, 0.8),
+  page.drawText("CUSTOMER DETAILS", {
+    x: 40,
+    y,
+    size: 12,
+    font: bold,
   });
 
   y -= 20;
 
+  page.drawText(
+    `Name: ${order.customer.fullName}`,
+    {
+      x: 40,
+      y,
+      size: 10,
+      font,
+    },
+  );
+
+  y -= 16;
+
+  page.drawText(
+    `Email: ${order.customer.email}`,
+    {
+      x: 40,
+      y,
+      size: 10,
+      font,
+    },
+  );
+
+  y -= 16;
+
+  page.drawText(
+    `Phone: ${order.customer.phone}`,
+    {
+      x: 40,
+      y,
+      size: 10,
+      font,
+    },
+  );
+
+  y -= 16;
+
+  page.drawText(
+    `Address: ${order.customer.address}`,
+    {
+      x: 40,
+      y,
+      size: 10,
+      font,
+    },
+  );
+
+  y -= 40;
+
+  /* ---------------- TABLE ---------------- */
+
+  page.drawRectangle({
+    x: 40,
+    y: y - 5,
+    width: 520,
+    height: 25,
+    color: rgb(0.95, 0.95, 0.95),
+  });
+
+  page.drawText("ITEM", {
+    x: 50,
+    y,
+    size: 10,
+    font: bold,
+  });
+
+  page.drawText("QTY", {
+    x: 320,
+    y,
+    size: 10,
+    font: bold,
+  });
+
+  page.drawText("PRICE", {
+    x: 390,
+    y,
+    size: 10,
+    font: bold,
+  });
+
+  page.drawText("TOTAL", {
+    x: 480,
+    y,
+    size: 10,
+    font: bold,
+  });
+
+  y -= 30;
+
   /* ---------------- ITEMS ---------------- */
-  order.items.forEach((item) => {
-    const total = item.price * item.quantity;
 
-    page.drawText(`${item.name}`, { x: 40, y, size: 10, font });
-    page.drawText(`${item.quantity}`, { x: 260, y, size: 10, font });
-    page.drawText(`LKR ${item.price}`, { x: 320, y, size: 10, font });
-    page.drawText(`LKR ${total}`, { x: 420, y, size: 10, font });
+  order.items.forEach((item: any) => {
+    const total =
+      item.price * item.quantity;
 
-    y -= 18;
+    page.drawText(
+      `${item.name} (${item.size || "-"} / ${
+        item.color || "-"
+      })`,
+      {
+        x: 50,
+        y,
+        size: 10,
+        font,
+      },
+    );
+
+    page.drawText(
+      `${item.quantity}`,
+      {
+        x: 320,
+        y,
+        size: 10,
+        font,
+      },
+    );
+
+    page.drawText(
+      `LKR ${item.price}`,
+      {
+        x: 390,
+        y,
+        size: 10,
+        font,
+      },
+    );
+
+    page.drawText(
+      `LKR ${total}`,
+      {
+        x: 480,
+        y,
+        size: 10,
+        font,
+      },
+    );
+
+    y -= 22;
   });
 
   y -= 20;
 
   /* ---------------- TOTAL ---------------- */
+
   page.drawLine({
-    start: { x: 40, y },
-    end: { x: 550, y },
+    start: { x: 350, y },
+    end: { x: 560, y },
     thickness: 1,
     color: rgb(0.8, 0.8, 0.8),
   });
@@ -197,70 +313,88 @@ async function generateReceiptPDF(order: Order): Promise<Buffer> {
   y -= 25;
 
   page.drawText("TOTAL", {
-    x: 320,
+    x: 390,
     y,
     size: 14,
     font: bold,
   });
 
-  page.drawText(`LKR ${order.total}`, {
-    x: 420,
-    y,
-    size: 14,
-    font: bold,
-  });
+  page.drawText(
+    `LKR ${order.total}`,
+    {
+      x: 480,
+      y,
+      size: 14,
+      font: bold,
+    },
+  );
 
   /* ---------------- FOOTER ---------------- */
+
   page.drawLine({
     start: { x: 40, y: 60 },
-    end: { x: 550, y: 60 },
+    end: { x: 560, y: 60 },
     thickness: 1,
     color: rgb(0.9, 0.9, 0.9),
   });
 
   page.drawText(
-    "ZEN • no noise.just ZEN • Thank you for your purchase",
-    { x: 40, y: 40, size: 9, font, color: rgb(0.5, 0.5, 0.5) }
+    "ZEN • Premium Streetwear",
+    {
+      x: 40,
+      y: 40,
+      size: 10,
+      font: bold,
+      color: rgb(0.4, 0.4, 0.4),
+    },
   );
 
-  page.drawText("This invoice was generated automatically.", {
-    x: 40,
-    y: 25,
-    size: 8,
-    font,
-    color: rgb(0.6, 0.6, 0.6),
-  });
+  page.drawText(
+    "Thank you for shopping with us.",
+    {
+      x: 40,
+      y: 24,
+      size: 9,
+      font,
+      color: rgb(0.5, 0.5, 0.5),
+    },
+  );
 
   const pdfBytes = await pdfDoc.save();
-  const buffer = Buffer.from(pdfBytes);
 
-  console.log("[pdf] generated size:", buffer.length);
-
-  return buffer;
+  return Buffer.from(pdfBytes);
 }
 
-/* ---------------- MAIN NOTIFICATION ---------------- */
+/* ---------------- MAIN ---------------- */
 
-export async function notifyOrderPlaced(order: Order) {
-  const adminEmail = process.env.ADMIN_EMAIL;
-  const customerEmail = order.customer.email;
-  const adminWhatsApp = process.env.ADMIN_WHATSAPP_PHONE;
+export async function notifyOrderPlaced(
+  order: any,
+) {
+  const adminEmail =
+    process.env.ADMIN_EMAIL;
 
-  const subject = `ZEN Order: ${order.id}`;
+  const customerEmail =
+    order.customer.email;
+
+  const subject = `ZEN Order ${order.id}`;
 
   /* ---------------- PDF ---------------- */
+
   let pdfBuffer: Buffer | null = null;
 
   try {
-    pdfBuffer = await generateReceiptPDF(order);
+    pdfBuffer =
+      await generateReceiptPDF(order);
+
+    console.log("[pdf] generated");
   } catch (err) {
-    console.error("❌ PDF GENERATION FAILED:", err);
+    console.error("[pdf:error]", err);
   }
 
   const attachments = pdfBuffer
     ? [
         {
-          filename: `ZEN-invoice-${order.id}.pdf`,
+          filename: `ZEN-INVOICE-${order.id}.pdf`,
           content: pdfBuffer,
           contentType: "application/pdf",
         },
@@ -268,31 +402,49 @@ export async function notifyOrderPlaced(order: Order) {
     : undefined;
 
   /* ---------------- EMAIL TEXT ---------------- */
+
   const text = `
-Order: ${order.id}
+Order ID: ${order.id}
+
 Customer: ${order.customer.fullName}
+
 Total: LKR ${order.total}
+
+Thank you for shopping with ZEN.
 `;
 
   /* ---------------- WHATSAPP ---------------- */
-  const message = buildWhatsAppMessage(order);
 
-  console.log("[whatsapp links]", [
-    getWhatsAppLink(order.customer.phone, message),
-    adminWhatsApp ? getWhatsAppLink(adminWhatsApp, message) : null,
-  ]);
+  const message =
+    buildWhatsAppMessage(order);
+
+  console.log(
+    "[whatsapp:customer]",
+    getWhatsAppLink(
+      order.customer.phone,
+      message,
+    ),
+  );
 
   /* ---------------- SEND EMAILS ---------------- */
+
   await Promise.allSettled([
     adminEmail
-      ? sendEmail({ to: adminEmail, subject, text, attachments })
+      ? sendEmail({
+          to: adminEmail,
+          subject,
+          text,
+          attachments,
+        })
       : Promise.resolve(),
 
-    sendEmail({
-      to: customerEmail,
-      subject,
-      text,
-      attachments,
-    }),
+    customerEmail
+      ? sendEmail({
+          to: customerEmail,
+          subject,
+          text,
+          attachments,
+        })
+      : Promise.resolve(),
   ]);
 }

@@ -13,8 +13,13 @@ export function AddToCartForm({ product }: { product: Product }) {
   const router = useRouter();
   const { addLine } = useCart();
 
-  const [size, setSize] = React.useState<"S" | "M" | "L" | "XL">(
-    product.sizes[0] ?? "M",
+  type Size = "S" | "M" | "L" | "XL";
+
+  const isSize = (v: string): v is Size =>
+    ["S", "M", "L", "XL"].includes(v);
+
+  const [size, setSize] = React.useState<Size>(
+    isSize(product.sizes?.[0]) ? product.sizes[0] : "M"
   );
   const [color, setColor] = React.useState(product.colors[0] ?? "Black");
   const [quantity, setQuantity] = React.useState(1);

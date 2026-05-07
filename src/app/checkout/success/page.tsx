@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/Button";
 import { SuccessWhatsAppSection } from "@/app/checkout/SuccessWhatsAppSection";
-import { getOrder } from "@/lib/store";
+import { getOrder } from "@/server/orders";
 
 export const metadata: Metadata = {
   title: "Order Confirmed",

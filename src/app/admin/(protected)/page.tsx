@@ -4,7 +4,8 @@ import { Container } from "@/components/layout/Container";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { formatMoney } from "@/lib/money";
-import { getOrders, getProducts } from "@/lib/store";
+import { getProducts } from "@/server/products";
+import { getOrders } from "@/server/orders";
 import { adminDeleteProduct, adminUpdateOrderStatus } from "@/app/admin/(protected)/actions";
 
 export default async function AdminDashboardPage() {
@@ -70,47 +71,30 @@ export default async function AdminDashboardPage() {
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{o.id}</p>
                   <p className="mt-1 text-xs text-muted">
-                    {new Date(o.createdAt).toLocaleString()} · {o.customer.fullName} ·{" "}
-                    {o.paymentMethod}
+                    {o.created_at ? new Date(o.created_at).toLocaleString() : "—"} · {o.email} · {o.phone}
                   </p>
                 </div>
+
                 <div className="flex items-center gap-3">
-                  <p className="text-sm font-semibold">{formatMoney(o.total)}</p>
+                  <p className="text-sm font-semibold">
+                    {formatMoney(o.total_amount)}
+                  </p>
+
                   <form action={adminUpdateOrderStatus} className="flex items-center gap-2">
                     <input type="hidden" name="id" value={o.id} />
+
                     <Select name="status" defaultValue={o.status} className="h-9">
-                      {["PLACED", "CONFIRMED", "SHIPPED", "CANCELLED"].map((s) => (
+                      {["PLACED", "SHIPPED", "DELIVERED", "CANCELLED"].map((s) => (
                         <option key={s} value={s}>
                           {s}
                         </option>
                       ))}
                     </Select>
+
                     <Button type="submit" variant="outline" size="sm">
                       Update
                     </Button>
                   </form>
-                </div>
-              </div>
-
-              <div className="mt-4 grid gap-2 rounded-xl border border-border bg-subtle p-4 text-xs text-muted">
-                <p>
-                  <span className="text-fg">Email:</span> {o.customer.email}
-                </p>
-                <p>
-                  <span className="text-fg">Phone:</span> {o.customer.phone}
-                </p>
-                <p>
-                  <span className="text-fg">Address:</span> {o.customer.address}
-                </p>
-                <div className="pt-2">
-                  <p className="text-fg">Items</p>
-                  <ul className="mt-2 grid gap-1">
-                    {o.items.map((i, idx) => (
-                      <li key={`${o.id}_${idx}`}>
-                        - {i.name} ({i.size}, {i.color}) x{i.quantity}
-                      </li>
-                    ))}
-                  </ul>
                 </div>
               </div>
             </div>

@@ -7,6 +7,8 @@ const nextConfig = {
       { protocol: "https", hostname: "public.blob.vercel-storage.com" },
       // Local dev conveniences (optional)
       { protocol: "https", hostname: "*.vercel-storage.com" },
+      // Supabase Storage public URLs
+      { protocol: "https", hostname: "*.supabase.co" },
     ],
   },
 };

@@ -1,30 +1,35 @@
 import type { Order } from "@/lib/domain";
 
 export function buildWhatsAppMessage(order: Order) {
-  const itemLines = order.items
-    .map((item) => {
-      const total = item.price * item.quantity;
-      const metadata = [item.color, item.size].filter(Boolean).join(" • ");
-      return `- ${item.name}${metadata ? ` (${metadata})` : ""} x${item.quantity} = LKR ${total}`;
-    })
-    .join("\n");
+  const itemLines =
+    (order.items ?? [])
+      .map((item) => {
+        const total = item.price * item.quantity;
+
+        // we only have product_id in DB (no name/color/size stored here)
+        return `- ${item.product_id} x${item.quantity} = LKR ${total}`;
+      })
+      .join("\n") || "No items";
+
+  const date = order.created_at
+    ? new Date(order.created_at).toLocaleDateString()
+    : "-";
 
   return `🧾 ZEN ORDER CONFIRMED
 
 Order ID: ${order.id}
-Date: ${new Date(order.createdAt).toLocaleDateString()}
+Date: ${date}
 
-Customer: ${order.customer.fullName}
-Phone: ${order.customer.phone}
-Email: ${order.customer.email}
-Address: ${order.customer.address}
-
-Payment: ${order.paymentMethod}
+Customer: ${order.customer_name}
+Phone: ${order.phone}
+Email: ${order.email}
 
 Items:
 ${itemLines}
 
-Total: LKR ${order.total}
+Payment: CASH ON DELIVERY
+
+Total: LKR ${order.total_amount}
 
 Thank you for shopping with ZEN`;
 }

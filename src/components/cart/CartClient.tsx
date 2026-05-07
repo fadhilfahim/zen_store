@@ -51,13 +51,20 @@ export function CartClient() {
           >
             <div className="flex items-center gap-4">
               <div className="relative h-20 w-16 overflow-hidden rounded-lg border border-border bg-subtle">
-                <Image
-                  src={l.image || "/zen-placeholder.svg"}
-                  alt={l.name}
-                  fill
-                  className="object-cover"
-                  unoptimized={(l.image || "/zen-placeholder.svg").startsWith("http")}
-                />
+                {((l.image || "/zen-placeholder.svg") || "").startsWith("http") ? (
+                  <img
+                    src={l.image || "/zen-placeholder.svg"}
+                    alt={l.name}
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                ) : (
+                  <Image
+                    src={l.image || "/zen-placeholder.svg"}
+                    alt={l.name}
+                    fill
+                    className="object-cover"
+                  />
+                )}
               </div>
               <div>
                 <p className="text-sm font-medium">{l.name}</p>

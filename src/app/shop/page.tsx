@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/layout/Container";
 import { ProductCard } from "@/components/product/ProductCard";
 import { Select } from "@/components/ui/Select";
-import { getProducts } from "@/lib/store";
+import { getProducts } from "@/server/products";
 
 export const metadata: Metadata = {
   title: "Shop",
@@ -25,7 +25,15 @@ export default async function ShopPage({
       ? (sp.size as "S" | "M" | "L" | "XL")
       : "";
 
-  const products = await getProducts();
+  let products = [];
+  try {
+    products = await getProducts();
+  } catch (error) {
+    console.error("Failed to fetch products:", error);
+    // Optionally return a custom error UI or an empty state
+    return <Container className="py-10">Error loading products. Please check database connection.</Container>;
+  }
+
   const categories = uniq(products.map((p) => p.category ?? "Essentials")).sort();
 
   const filtered = products.filter((p) => {
@@ -81,4 +89,3 @@ export default async function ShopPage({
     </Container>
   );
 }
-

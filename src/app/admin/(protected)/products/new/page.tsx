@@ -16,4 +16,3 @@ const empty: Product = {
 export default function AdminNewProductPage() {
   return <AdminProductEditor product={empty} mode="new" />;
 }
-

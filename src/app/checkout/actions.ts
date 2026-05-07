@@ -2,9 +2,14 @@
 
 import { z } from "zod";
 
-import { type Order, PaymentMethodEnum } from "@/lib/domain";
-import { createOrder } from "@/lib/store";
+import { createOrder } from "@/server/orders";
 import { notifyOrderPlaced } from "@/lib/notifications";
+
+/* ---------------- PAYMENT ENUM ---------------- */
+
+const PaymentMethodEnum = z.enum(["COD", "CARD", "BANK"]);
+
+/* ---------------- CHECKOUT SCHEMA ---------------- */
 
 const CheckoutSchema = z.object({
   fullName: z.string().min(1),
@@ -15,25 +20,35 @@ const CheckoutSchema = z.object({
   itemsJson: z.string().min(2),
 });
 
+/* ---------------- ITEM SCHEMA ---------------- */
+
+const SizeEnum = z.enum(["S", "M", "L", "XL"]);
+
 const ItemSchema = z.object({
   productId: z.string(),
   name: z.string(),
   price: z.number().nonnegative(),
   image: z.string().optional(),
-  size: z.enum(["S", "M", "L", "XL"]),
+  size: SizeEnum,
   color: z.string(),
   quantity: z.number().int().positive(),
 });
 
+/* ---------------- RESULT TYPE ---------------- */
+
 export type PlaceOrderState =
-  | { ok: true; order: Order }
+  | { ok: true; order: Awaited<ReturnType<typeof createOrder>> }
   | { ok: false; message: string };
+
+/* ---------------- ACTION ---------------- */
 
 export async function placeOrder(
   _prev: PlaceOrderState | null,
   formData: FormData,
 ): Promise<PlaceOrderState> {
   try {
+    /* ---------------- RAW DATA ---------------- */
+
     const raw = {
       fullName: String(formData.get("fullName") || ""),
       phone: String(formData.get("phone") || ""),
@@ -43,27 +58,52 @@ export async function placeOrder(
       itemsJson: String(formData.get("itemsJson") || ""),
     };
 
+    /* ---------------- VALIDATE ---------------- */
+
     const parsed = CheckoutSchema.parse(raw);
-    const items = z.array(ItemSchema).min(1).parse(JSON.parse(parsed.itemsJson));
-    const total = items.reduce((s, i) => s + i.price * i.quantity, 0);
+
+    const items = z
+      .array(ItemSchema)
+      .min(1)
+      .parse(JSON.parse(parsed.itemsJson));
+
+    /* ---------------- DB ITEMS ---------------- */
+
+    const dbItems = items.map((item) => ({
+      product_id: item.productId,
+      name: item.name,
+      quantity: item.quantity,
+      price: item.price,
+      size: item.size,
+      color: item.color,
+    }));
+
+    /* ---------------- CREATE ORDER ---------------- */
 
     const order = await createOrder({
-      customer: {
-        fullName: parsed.fullName,
-        phone: parsed.phone,
-        email: parsed.email,
-        address: parsed.address,
-      },
-      items,
-      total,
-      paymentMethod: parsed.paymentMethod,
+      customer_name: parsed.fullName,
+      email: parsed.email,
+      phone: parsed.phone,
+      address: parsed.address,
+      payment_method: parsed.paymentMethod,
+      items: dbItems,
     });
 
+    /* ---------------- SEND EMAIL/PDF ---------------- */
+
     await notifyOrderPlaced(order);
-    return { ok: true, order };
+
+    return {
+      ok: true,
+      order,
+    };
   } catch (e) {
-    const message = e instanceof Error ? e.message : "Failed to place order.";
-    return { ok: false, message };
+    console.error("ORDER ERROR:", e);
+
+    return {
+      ok: false,
+      message:
+        e instanceof Error ? e.message : "Failed to place order.",
+    };
   }
 }
-

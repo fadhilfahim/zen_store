@@ -1,8 +1,7 @@
 import type { Product } from "@/lib/domain";
 
-export const seedProducts: Product[] = [
+export const seedProducts: Omit<Product, "id" | "created_at">[] = [
   {
-    id: "zen-001",
     name: "Oversized Tee",
     price: 2400,
     description:
@@ -14,7 +13,6 @@ export const seedProducts: Product[] = [
     category: "Tops",
   },
   {
-    id: "zen-002",
     name: "Utility Hoodie",
     price: 5400,
     description:
@@ -26,7 +24,6 @@ export const seedProducts: Product[] = [
     category: "Outerwear",
   },
   {
-    id: "zen-003",
     name: "Straight-Leg Trouser",
     price: 6200,
     description:
@@ -38,4 +35,3 @@ export const seedProducts: Product[] = [
     category: "Bottoms",
   },
 ];
-
