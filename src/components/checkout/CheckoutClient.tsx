@@ -113,7 +113,7 @@ export function CheckoutClient() {
             <div>
               <label className="mb-2 block text-xs text-muted">Payment Method</label>
               <Select name="paymentMethod" defaultValue="COD" required>
-                <option value="BANK_DEPOSIT">Bank Deposit</option>
+                <option value="BANK">Bank Deposit</option>
                 <option value="COD">Cash on Delivery (COD)</option>
               </Select>
               <p className="mt-2 text-xs text-muted">

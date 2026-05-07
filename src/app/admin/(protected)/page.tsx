@@ -67,38 +67,75 @@ export default async function AdminDashboardPage() {
         <div className="mt-4 grid gap-3">
           {orders.map((o) => (
             <div key={o.id} className="rounded-xl border border-border bg-card p-4">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{o.id}</p>
-                  <p className="mt-1 text-xs text-muted">
-                    {o.created_at ? new Date(o.created_at).toLocaleString() : "—"} · {o.email} · {o.phone}
-                  </p>
-                </div>
 
-                <div className="flex items-center gap-3">
-                  <p className="text-sm font-semibold">
-                    {formatMoney(o.total_amount)}
-                  </p>
-
-                  <form action={adminUpdateOrderStatus} className="flex items-center gap-2">
-                    <input type="hidden" name="id" value={o.id} />
-
-                    <Select name="status" defaultValue={o.status} className="h-9">
-                      {["PLACED", "SHIPPED", "DELIVERED", "CANCELLED"].map((s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                      ))}
-                    </Select>
-
-                    <Button type="submit" variant="outline" size="sm">
-                      Update
-                    </Button>
-                  </form>
-                </div>
+              {/* HEADER */}
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium">{o.id}</p>
+                <p className="mt-1 text-xs text-muted">
+                  {o.created_at ? new Date(o.created_at).toLocaleString() : "—"} · {o.email} · {o.phone}
+                </p>
               </div>
+
+              {/* ITEMS */}
+              {o.items?.length ? (
+                <div className="mt-4 border-t border-border pt-4">
+                  <p className="mb-2 text-xs tracking-[0.2em] text-muted">
+                    ITEMS
+                  </p>
+
+                  <div className="space-y-2">
+                    {o.items.map((item:any) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between rounded-lg bg-subtle px-3 py-2"
+                      >
+                        <div>
+                          <p className="text-sm font-medium">
+                            {item.name}
+                          </p>
+                          <p className="text-xs text-muted">
+                            Qty: {item.quantity}
+                            {item.size ? ` · Size: ${item.size}` : ""}
+                            {item.color ? ` · Color: ${item.color}` : ""}
+                          </p>
+                        </div>
+
+                        <p className="text-sm font-semibold">
+                          {formatMoney(item.price * item.quantity)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {/* FOOTER */}
+              <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-border pt-4">
+
+                <p className="text-sm font-semibold">
+                  {formatMoney(o.total_amount)}
+                </p>
+
+                <form action={adminUpdateOrderStatus} className="flex items-center gap-2">
+                  <input type="hidden" name="id" value={o.id} />
+
+                  <Select name="status" defaultValue={o.status} className="h-9">
+                    {["PLACED", "SHIPPED", "DELIVERED", "CANCELLED"].map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </Select>
+
+                  <Button type="submit" variant="outline" size="sm">
+                    Update
+                  </Button>
+                </form>
+              </div>
+
             </div>
           ))}
+
           {orders.length === 0 ? (
             <div className="rounded-xl border border-border bg-subtle p-5 text-sm text-muted">
               No orders yet.
