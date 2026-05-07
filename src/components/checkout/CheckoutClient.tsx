@@ -20,6 +20,8 @@ export function CheckoutClient() {
   const routerRef = React.useRef(router);
   const clearRef = React.useRef(clear);
 
+  const [paymentMethod, setPaymentMethod] = React.useState("COD");
+
   React.useEffect(() => {
     routerRef.current = router;
   }, [router]);
@@ -112,13 +114,34 @@ export function CheckoutClient() {
 
             <div>
               <label className="mb-2 block text-xs text-muted">Payment Method</label>
-              <Select name="paymentMethod" defaultValue="COD" required>
-                <option value="BANK">Bank Deposit</option>
+
+              <Select
+                name="paymentMethod"
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                required
+              >
                 <option value="COD">Cash on Delivery (COD)</option>
+                <option value="BANK">Bank Deposit</option>
               </Select>
-              <p className="mt-2 text-xs text-muted">
-                No gateway is integrated — we only record your selection.
-              </p>
+
+              {/* BANK DROPDOWN SECTION */}
+              <div
+                className={`mt-3 overflow-hidden rounded-xl border border-border transition-all ${paymentMethod === "BANK"
+                    ? "max-h-40 opacity-100"
+                    : "max-h-0 opacity-0"
+                  }`}
+              >
+                <div className="bg-subtle p-6 text-xs text-muted space-y-1">
+                  <p className="font-medium text-foreground">Bank Details</p>
+                  <p>Account Name: I Imas</p>
+                  <p>Account Number: 123456789</p>
+                  <p>Bank: BOC Bank</p>
+                  <p className="pt-2">
+                    After payment, send screenshot via WhatsApp or email.
+                  </p>
+                </div>
+              </div>
             </div>
 
             {state && !state.ok ? (
